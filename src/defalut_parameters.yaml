@@ -1,0 +1,60 @@
+# Unit dimension
+unit:
+  length: "au" # 'Bohr', 'nm', 'pm', 'Angstroam'
+  energy: "au" # 'Hartree', 'Rydberg', 'J', 'aJ'
+  time: "au" # 'fs', 'as'
+  efield: "au" # 'V/nm', 'MV/cm', 'V/Angstroam'
+  angle: "2pi" # "rad", "degree"
+# Model
+model:                 #Parameters to identify physical model
+  modelID: "Harmonic-oscillaor" 
+  decription: "1D Harmonic-oscillator"
+  reference: False
+  spatialdim: 1
+  material: False
+  omega: 1.0
+# Time evolution
+tevolution: 
+  propagator: "TE4"
+  NKrylov: 4
+  PC_option: False
+  ME_option: False
+  NME: 1
+# time grid
+tgrid:   # Parameters to identify the grid for the time grid
+  Nt: 20000
+  dt: 0.02
+# E-field, A-field
+field:   # Parameters to identify the temporal field shape
+  field_shape: 'pulse'
+  edir1:
+   - 1.0
+   - 0.0
+   - 0.0
+  edir2:
+   - 0.0
+   - 1.0
+   - 0.0
+  edir3:
+   - 0.0
+   - 0.0
+   - 1.0
+  E1: 1.94e-6
+  E2: 0.000
+  E3: 0.000
+  Tpulse1: 248.036
+  Tpulse2: 248.036
+  Tpulse3: 248.036
+  omega1: 0.05880
+  omega2: 0.11760
+  omega3: 0.17640
+  nenvelope1: 4
+  nenvelope2: 4
+  nenvelope3: 4
+  phiCEP1: 0.25
+  phiCEP2: 0.25
+  phiCEP3: 0.25
+# Other options
+options:  # Parameters to identify options 
+  full_output_option: False
+  plot_option: False
