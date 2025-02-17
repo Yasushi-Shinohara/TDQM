@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm, colors
 from modules.constants import *
-from modules.functions import get_an_expectaion_value
 
 #
 def plotfielddata(tgrid, field):

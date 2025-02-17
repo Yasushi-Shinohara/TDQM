@@ -9,7 +9,7 @@ import numpy as np
 class Input:
     """A class for input."""
 
-    default_parameter_file = './default_parameter.yaml'
+    default_parameter_file = './default_parameters.yaml'
 
     @classmethod
     def read_input(cls):
