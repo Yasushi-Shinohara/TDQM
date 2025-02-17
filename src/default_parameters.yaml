@@ -7,12 +7,15 @@ unit:
   angle: "2pi" # "rad", "degree"
 # Model
 model:                 #Parameters to identify physical model
-  modelID: "Harmonic-oscillaor" 
+  modelID: "1DHarmonic-oscillator" 
   decription: "1D Harmonic-oscillator"
   reference: False
   spatialdim: 1
   material: False
-  omega: 1.0
+  Omega: 1.0
+  N1: 1000
+  M: 1
+  Lbox1: 10.0
 # Time evolution
 tevolution: 
   propagator: "TE4"

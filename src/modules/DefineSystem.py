@@ -6,6 +6,7 @@ from modules.constants import *
 import logging
 from modules.general_functions import dict_to_namedtuple
 import numpy as np
+from scipy.sparse import dok_array
 
 class Unit:
     """A class to manage unit/dimension in TDkpModel. """
@@ -21,6 +22,14 @@ class Model:
     @classmethod
     def construct_model_namedtuple(cls, param):
         model_d = param["model"]
+        if model_d['modelID'] == "1DHarmonic-oscillator":
+            x = np.linspace(-model.Lbox1/2.0, model.Lbox1/2.0, model.N1)
+            dx = x[1] - x[0]
+            model_d.update(x = x, dx = dx)
+            velocity = grad1D/zI
+            vpot = vpot_1DHarmonic_oscillator
+            model_d.update(velociity = velocity, vpot = vpot)
+
         if model_d['modelID'] == "LQZDFZ-surface":
             k2h = cls.k2h_LQZDFZ_surface
             k2hk = cls.k2hk_LQZDFZ_surface
@@ -33,6 +42,25 @@ class Model:
 
         return model
 
+    @staticmethod
+    def grad1D(model):
+        """Hamiltonian at a given k-point within LQZDFZ surface model."""
+        grad1D = dok_array((model.N1, model.N1), dtype=np.float64)
+        for i in range(1, model.N1 - 1):
+            grad1D[i, i + 1] = 0.5/dx
+            grad1D[i, i - 1] = -0.5/dx
+        grad1D[0, 0 + 1] = 0.5/dx
+        grad1D[model.N1 - 2, model.N1 - 1] = -0.5/dx
+        grad1D = grad1D.tocsr()  # 計算時には CSR
+
+        return grad1D
+    def vpot_1DHarmonic_oscillator(model):
+        """Hamiltonian at a given k-point within LQZDFZ surface model."""
+        vpot = dok_array((model.N1, model.N1), dtype=np.float64)
+        for i in range(model.N1):
+            vpot[i, i] = 0.5*model.Omega**2*model.x**2
+        grad1D = grad1D.tocsr()  # 計算時には CSR
+        return vpot
     @staticmethod
     def k2h_LQZDFZ_surface(kx,ky,kz,model):
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
