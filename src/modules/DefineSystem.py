@@ -30,6 +30,8 @@ class Model:
             velocity = cls.velocity1D
             vpot = cls.vpot_1DHarmonic_oscillator
             model_d.update(velociity = velocity, vpot = vpot)
+            set_GS_WF = cls.set_GS_WF_1DHarmonic_oscillator
+            model_d.update(set_GS_WF = set_GS_WF)
         model = dict_to_namedtuple('model_namedtuple', model_d)
 
         return model
@@ -40,13 +42,27 @@ class Model:
         velocity1D = grad1D_uniform_grid(model.N1, model.dx)/zI
 
         return velocity1D
+    @staticmethod
     def vpot_1DHarmonic_oscillator(model):
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
         vpot = dok_array((model.N1, model.N1), dtype=np.float64)
         for i in range(model.N1):
-            vpot[i, i] = 0.5*model.Omega**2*model.x**2
+            vpot[i, i] = 0.5*model.Omega**2*model.x[i]**2
         vpot = vpot.tocsr()  # 計算時には CSR
         return vpot
+    @staticmethod
+    def set_GS_WF_1DHarmonic_oscillator(x0, delx, p0, model):
+        """Hamiltonian at a given k-point within LQZDFZ surface model."""
+        phi = np.exp(-0.5*(model.x - x0)**2/delx**2)*np.exp(zI*p0*model.x)
+        phi = phi/(np.sqrt(np.sum((np.abs(phi))**2)))
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.plot(model.x, np.real(phi), label='$\Re (\phi)$')
+        plt.plot(model.x, np.imag(phi), label='$\Im (\phi)$')
+        plt.fill_between(model.x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
+        plt.legend()
+        plt.show()
+        return phi
 #
 class TGrid:
     """A class to manage tgrid in TDkpModel. """

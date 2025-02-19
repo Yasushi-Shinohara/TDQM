@@ -16,6 +16,9 @@ model:                 #Parameters to identify physical model
   N1: 1000
   M: 1
   Lbox1: 10.0
+  x0: -2.5 
+  delx: 0.5
+  p0: 0.0
 # Time evolution
 tevolution: 
   propagator: "TE4"

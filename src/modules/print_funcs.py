@@ -18,6 +18,9 @@ def print_header():
     print('# numpy version: ',np.__version__)
     #np.show_config()
     print('# ===========================')
+    import scipy as sp
+    print('# scipy version: ',sp.__version__)
+    print('# ===========================')
     import math
     #import time as timemod #To avoid overlap to "time" in real-time propagation part
     import ctypes as ct

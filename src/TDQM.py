@@ -31,6 +31,8 @@ if (options.plot_option):
 if (np.amax(tgrid.t) < max([field.Tpulse1, field.Tpulse2, field.Tpulse3])):
     print('# WARNING: max(t) is shorter than Tpulse')
 
+phi = model.set_GS_WF(model.x0, model.delx, model.p0, model)
+
 tt = time.time()
 print_midtime(ts,tt)
 

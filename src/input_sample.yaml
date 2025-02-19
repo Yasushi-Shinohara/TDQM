@@ -1,0 +1,3 @@
+# Other options
+options:  # Parameters to identify options 
+  plot_option: True
