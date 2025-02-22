@@ -1,3 +1,6 @@
-# Other options
+model:                 #Parameters to identify physical model
+  N1: 100
+tgrid:   # Parameters to identify the grid for the time grid
+  Nt: 2000
 options:  # Parameters to identify options 
-  plot_option: True
+  plot_option: False

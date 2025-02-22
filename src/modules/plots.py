@@ -33,3 +33,14 @@ def plotfielddata(tgrid, field):
     plt.show()
     #
     return
+#
+def plotphidata(x, phi):
+    plt.figure()
+    plt.plot(x, np.real(phi), label='$\Re (\phi)$')
+    plt.plot(x, np.imag(phi), label='$\Im (\phi)$')
+    plt.fill_between(x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
+    plt.legend()
+    plt.show()
+    #
+    return
+    

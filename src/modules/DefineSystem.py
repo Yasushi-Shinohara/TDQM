@@ -8,6 +8,7 @@ from modules.general_functions import dict_to_namedtuple
 from modules.functions import grad1D_uniform_grid
 import numpy as np
 from scipy.sparse import dok_array
+import scipy as sp
 
 class Unit:
     """A class to manage unit/dimension in TDkpModel. """
@@ -29,9 +30,10 @@ class Model:
             model_d.update(x = x, dx = dx)
             velocity = cls.velocity1D
             vpot = cls.vpot_1DHarmonic_oscillator
-            model_d.update(velociity = velocity, vpot = vpot)
+            model_d.update(velocity = velocity, vpot = vpot)
             set_GS_WF = cls.set_GS_WF_1DHarmonic_oscillator
             model_d.update(set_GS_WF = set_GS_WF)
+            model_d.update(get_h_eigenpairs = cls.get_h_eigenpairs)
         model = dict_to_namedtuple('model_namedtuple', model_d)
 
         return model
@@ -55,14 +57,13 @@ class Model:
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
         phi = np.exp(-0.5*(model.x - x0)**2/delx**2)*np.exp(zI*p0*model.x)
         phi = phi/(np.sqrt(np.sum((np.abs(phi))**2)))
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.plot(model.x, np.real(phi), label='$\Re (\phi)$')
-        plt.plot(model.x, np.imag(phi), label='$\Im (\phi)$')
-        plt.fill_between(model.x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
-        plt.legend()
-        plt.show()
         return phi
+    @staticmethod
+    def get_h_eigenpairs(h):
+        """Hamiltonian at a given k-point within LQZDFZ surface model."""
+#        eig, vec =  np.linalg.eigh(h)
+        eig, vec =  sp.sparse.linalg.eigsh(h, which='SA')
+        return eig, vec
 #
 class TGrid:
     """A class to manage tgrid in TDkpModel. """
@@ -164,7 +165,8 @@ class TEvolution:
     def get_psi_forward_TE4(wf, h, dt, NTEorder = 4):
         temp = 1.0*wf
         for norder in range(1, NTEorder+1):
-            temp = - zI*np.dot(h, temp)/float(norder)
+#            temp = - zI*np.dot(h, temp)/float(norder)
+            temp = - (zI*dt)*h@temp/float(norder)
             wf = wf + temp
         return wf
 

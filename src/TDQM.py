@@ -9,7 +9,7 @@ from modules.constants import *
 from modules.IO import *
 from modules.DefineSystem import Unit, Model, TGrid, Field, TEvolution, Options
 #from modules.DefineSystem import *
-from modules.plots import plotfielddata
+from modules.plots import plotfielddata, plotphidata
 #from modules.functions import get_an_expectaion_value
 
 #############################Prep. for the system########################
@@ -32,14 +32,42 @@ if (np.amax(tgrid.t) < max([field.Tpulse1, field.Tpulse2, field.Tpulse3])):
     print('# WARNING: max(t) is shorter than Tpulse')
 
 phi = model.set_GS_WF(model.x0, model.delx, model.p0, model)
+if (options.plot_option):
+    plotphidata(model.x, phi)
+velocity = model.velocity(model)
+t = 0.5*velocity@velocity
+vpot = model.vpot(model)
+h = t + vpot
+print(h.dtype)
+eig, vec = model.get_h_eigenpairs(h)
+print(eig)
+import matplotlib.pyplot as plt
+plt.figure()
+plt.ylim(0.0, 4.0)
+plt.plot(model.x, vpot.diagonal())
+for n in range(6):
+    plt.plot(model.x, np.real(vec[:,n])*2.0+eig[n], label=str(n))
+#plt.plot(model.x, np.real(phi), label='$\Re (\phi)$')
+#plt.plot(model.x, np.imag(phi), label='$\Im (\phi)$')
+#plt.fill_between(x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
+plt.legend()
+plt.show()
 
 tt = time.time()
 print_midtime(ts,tt)
 
 #############################RT calculation##############################
 #
+psi = 1.0*phi
+norm = np.linalg.norm(psi)
+
 for it in range(tgrid.Nt):
-    norm = 1.0
+    velocity = model.velocity(model)
+    t = 0.5*velocity@velocity
+    vpot = model.vpot(model)
+    h = t + vpot
+    psi = tevolution.get_psi_forward(psi, h, tgrid.dt)
+    norm = np.linalg.norm(psi)
     if (it%200 == 0):
         print('# ',it, norm)
 #
