@@ -37,7 +37,7 @@ if (options.plot_option):
     plotphidata(model.x, phi)
 
 if (options.plot_option):
-    #t = 0.5*velocity@velocity
+    #tkin = 0.5*velocity@velocity
     tkin = model.tkin(model)
     vpot = model.vpot(model)
     h = tkin + vpot
@@ -50,19 +50,23 @@ print_midtime(ts,tt)
 
 #############################RT calculation##############################
 #
-psi = 1.0*phi
-norm = np.linalg.norm(psi)
+psi = 1.0*phi + 0.0*zI
+x = np.zeros(tgrid.Nt)
+norm = np.zeros(tgrid.Nt)
 
 for it in range(tgrid.Nt):
+    x[it] = np.vdot(psi, model.x*psi).real
+    norm[it] = np.linalg.norm(psi)
+
     velocity = model.velocity(model)
-    #t = 0.5*velocity@velocity
+    #tkin = 0.5*velocity@velocity #The vlocity square is in accurate for the kinetic energy operator
     tkin = model.tkin(model)
     vpot = model.vpot(model)
     h = tkin + vpot
     psi = tevolution.get_psi_forward(psi, h, tgrid.dt)
-    norm = np.linalg.norm(psi)
+    
     if (it%200 == 0):
-        print('# ',it, norm)
+        print('# ',it, x[it], norm[it])
 #
 te = time.time()
 print_endtime(ts,tt,te,tgrid.Nt)

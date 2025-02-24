@@ -70,9 +70,9 @@ class Model:
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
 #        eig, vec =  np.linalg.eigh(h)
         eig =  sp.sparse.linalg.eigsh(h, k=6, return_eigenvectors = False, which='LA')
-        print("Largest eigenvalue", eig)
+        print("The largest eigenvalues", eig)
         eig, vec =  sp.sparse.linalg.eigsh(h, k=6, which='SA')
-        print("Smalleter eigenvalue", eig)
+        print("The smallest eigenvalues", eig)
         return eig, vec
 #
 class TGrid:
