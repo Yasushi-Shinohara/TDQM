@@ -5,7 +5,7 @@ import sys
 from modules.constants import *
 import logging
 from modules.general_functions import dict_to_namedtuple
-from modules.functions import grad1D_uniform_grid
+from modules.functions import grad1D_uniform_grid, lap1D_uniform_grid
 import numpy as np
 from scipy.sparse import dok_array
 import scipy as sp
@@ -29,8 +29,9 @@ class Model:
             dx = x[1] - x[0]
             model_d.update(x = x, dx = dx)
             velocity = cls.velocity1D
+            tkin = cls.tkin1D
             vpot = cls.vpot_1DHarmonic_oscillator
-            model_d.update(velocity = velocity, vpot = vpot)
+            model_d.update(velocity = velocity, tkin = tkin, vpot = vpot)
             set_GS_WF = cls.set_GS_WF_1DHarmonic_oscillator
             model_d.update(set_GS_WF = set_GS_WF)
             model_d.update(get_h_eigenpairs = cls.get_h_eigenpairs)
@@ -44,6 +45,12 @@ class Model:
         velocity1D = grad1D_uniform_grid(model.N1, model.dx)/zI
 
         return velocity1D
+    @staticmethod
+    def tkin1D(model):
+        """Hamiltonian at a given k-point within LQZDFZ surface model."""
+        tkin1D = -0.5*lap1D_uniform_grid(model.N1, model.dx)
+
+        return tkin1D
     @staticmethod
     def vpot_1DHarmonic_oscillator(model):
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
@@ -62,7 +69,10 @@ class Model:
     def get_h_eigenpairs(h):
         """Hamiltonian at a given k-point within LQZDFZ surface model."""
 #        eig, vec =  np.linalg.eigh(h)
-        eig, vec =  sp.sparse.linalg.eigsh(h, which='SA')
+        eig =  sp.sparse.linalg.eigsh(h, k=6, return_eigenvectors = False, which='LA')
+        print("Largest eigenvalue", eig)
+        eig, vec =  sp.sparse.linalg.eigsh(h, k=6, which='SA')
+        print("Smalleter eigenvalue", eig)
         return eig, vec
 #
 class TGrid:

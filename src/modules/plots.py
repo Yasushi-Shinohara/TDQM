@@ -36,11 +36,23 @@ def plotfielddata(tgrid, field):
 #
 def plotphidata(x, phi):
     plt.figure()
-    plt.plot(x, np.real(phi), label='$\Re (\phi)$')
-    plt.plot(x, np.imag(phi), label='$\Im (\phi)$')
+    plt.plot(x, np.real(phi), label='$\\Re (\\phi)$')
+    plt.plot(x, np.imag(phi), label='$\\Im (\\phi)$')
     plt.fill_between(x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
     plt.legend()
     plt.show()
     #
     return
-    
+#
+def plotspectra(eig, vec, x, vpot):
+    print(eig)
+    plt.figure()
+    plt.ylim(0.0, 4.0)
+    plt.plot(x, vpot)
+    for n in range(6):
+        plt.plot(x, np.real(vec[:,n])+eig[n], label=str(n))
+    plt.legend()
+    plt.show()
+
+    #
+    return

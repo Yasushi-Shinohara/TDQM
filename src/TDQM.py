@@ -9,8 +9,9 @@ from modules.constants import *
 from modules.IO import *
 from modules.DefineSystem import Unit, Model, TGrid, Field, TEvolution, Options
 #from modules.DefineSystem import *
-from modules.plots import plotfielddata, plotphidata
+from modules.plots import plotfielddata, plotphidata, plotspectra
 #from modules.functions import get_an_expectaion_value
+from modules.functions import lap1D_uniform_grid, grad1D_uniform_grid
 
 #############################Prep. for the system########################
 param = Input.read_input()
@@ -34,24 +35,15 @@ if (np.amax(tgrid.t) < max([field.Tpulse1, field.Tpulse2, field.Tpulse3])):
 phi = model.set_GS_WF(model.x0, model.delx, model.p0, model)
 if (options.plot_option):
     plotphidata(model.x, phi)
-velocity = model.velocity(model)
-t = 0.5*velocity@velocity
-vpot = model.vpot(model)
-h = t + vpot
-print(h.dtype)
-eig, vec = model.get_h_eigenpairs(h)
-print(eig)
-import matplotlib.pyplot as plt
-plt.figure()
-plt.ylim(0.0, 4.0)
-plt.plot(model.x, vpot.diagonal())
-for n in range(6):
-    plt.plot(model.x, np.real(vec[:,n])*2.0+eig[n], label=str(n))
-#plt.plot(model.x, np.real(phi), label='$\Re (\phi)$')
-#plt.plot(model.x, np.imag(phi), label='$\Im (\phi)$')
-#plt.fill_between(x, np.abs(phi), -np.abs(phi),facecolor='k',alpha=0.25,label='envelope')
-plt.legend()
-plt.show()
+
+if (options.plot_option):
+    #t = 0.5*velocity@velocity
+    tkin = model.tkin(model)
+    vpot = model.vpot(model)
+    h = tkin + vpot
+    print(h.dtype)
+    eig, vec = model.get_h_eigenpairs(h)    
+    plotspectra(eig, vec, model.x, vpot.diagonal())
 
 tt = time.time()
 print_midtime(ts,tt)
@@ -63,9 +55,10 @@ norm = np.linalg.norm(psi)
 
 for it in range(tgrid.Nt):
     velocity = model.velocity(model)
-    t = 0.5*velocity@velocity
+    #t = 0.5*velocity@velocity
+    tkin = model.tkin(model)
     vpot = model.vpot(model)
-    h = t + vpot
+    h = tkin + vpot
     psi = tevolution.get_psi_forward(psi, h, tgrid.dt)
     norm = np.linalg.norm(psi)
     if (it%200 == 0):
